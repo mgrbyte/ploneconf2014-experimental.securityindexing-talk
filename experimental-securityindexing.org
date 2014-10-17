@@ -1,0 +1,58 @@
+#+Title: Experimental Security Indexing
+#+Author: Matt Russell <mattr@netsight.co.uk>
+#+EPRESENT_FRAME_LEVEL: 1
+
+plone-intranet.png
+
+* TODO A bit about me
+Python developer since '98/Python1.5.2
+Author of/Contributor to some open source stuff
+ - pyramid
+ - substanced
+ - ploneintranet
+
+* TODO The problem
+** TODO What is the problem?
+*** @@sharing tab - performing operations here can be expensive
+*** Complex heirachies compound the problem
+***  Depending on number of objects, request can timeout (HTTP 503), or worse, crash the site.
+** TODO Next steps?
+Who knows?
+* TODO Approches
+  :PROPERTIES:
+  :ARCHIVE:  approaches
+  :END:
+
+ Various approaches were attempted:
+
+  - Using PAS groups to represent groups of permissions
+  - Implementing a 'shadow tree' as a ZCatalog index
+    - https://github.com/netsight/experimental.localrolesindex
+
+* TODO Plone Intranet Project
+As part of the Plone intranet project, three Netsight'ers were assigned
+to work on the problem:
+
+   - Matt Hamilton [img]
+   - Ben Cole [img]
+   - Matt Russell [img]
+
+Initial design phase:
+ - Whiteboard design
+ - Collobarative coding sessions
+
+* TODO Implementation
+
+ Mainly my fault:
+ https://github.com/ploneintranet/experimental.securityindexing
+
+ Shadow tree images
+ Step through what the algorithm does
+
+* TODO Benchmarks
+
+Benchmarks here.
+
+* TODO Wrapping up
+
+[[http://www.netsight.co.uk/blog/optimising-local-role-security-reindexing-in-plone/][Matt Hamiton's Blog post]]
