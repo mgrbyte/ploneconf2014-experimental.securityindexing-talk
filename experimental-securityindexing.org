@@ -4,20 +4,21 @@
 
 plone-intranet.png
 
-* TODO A bit about me
+* A bit about me
 Python developer since '98/Python1.5.2
 Author of/Contributor to some open source stuff
  - pyramid
  - substanced
  - ploneintranet
 
+mattr-whiteboard.jpeg
+
 * TODO The problem
 ** TODO What is the problem?
-*** @@sharing tab - performing operations here can be expensive
-*** Complex heirachies compound the problem
-***  Depending on number of objects, request can timeout (HTTP 503), or worse, crash the site.
-** TODO Next steps?
-Who knows?
+  - @@sharing tab - performing operations here can be expensive
+  - Complex heirachies compound the problem
+  - Depending on number of objects, request can timeout (HTTP 503), or worse, crash the site.
+
 * TODO Approches
   :PROPERTIES:
   :ARCHIVE:  approaches
@@ -26,33 +27,50 @@ Who knows?
  Various approaches were attempted:
 
   - Using PAS groups to represent groups of permissions
+    Attempt to group common permissions sets using (PAS) user groups
   - Implementing a 'shadow tree' as a ZCatalog index
     - https://github.com/netsight/experimental.localrolesindex
+    - Abandonded approach due to 'wrong level' of abstraction 
+      (Index implementation would require knowledge of Plone content/portal objects)
 
 * TODO Plone Intranet Project
 As part of the Plone intranet project, three Netsight'ers were assigned
 to work on the problem:
 
-   - Matt Hamilton [img]
-   - Ben Cole [img]
-   - Matt Russell [img]
+   - Matt Hamilton,Ben Cole and Matt Russell
 
-Initial design phase:
+Initial design phase (3 days, no code!):
  - Whiteboard design
  - Collobarative coding sessions
 
-* TODO Implementation
+* Implementation
 
- Mainly my fault:
+ Current implementation is at:
  https://github.com/ploneintranet/experimental.securityindexing
 
- Shadow tree images
- Step through what the algorithm does
+ Patches the `reindexObjectSecurity` method for each type of Content Type system (AT, DX)
 
-* TODO Benchmarks
+** Description
 
-Benchmarks here.
+ - A `Shadow tree` is a node based structure which mirrors the content tree.
+ - Stores a hash of all the objects' __ac_local_roles__
+ - subscribers to DX/AT events:
+   - ensure nodes are created/moved/deleted in the shadow tree for each operation on content
+ - A step through what the algorithm does
+   
+* Benchmarks
 
-* TODO Wrapping up
+ - Can be run against:
+   - Plone 4.x with Archetypes content
+   - Plone 4.x with Dexterity content
 
-[[http://www.netsight.co.uk/blog/optimising-local-role-security-reindexing-in-plone/][Matt Hamiton's Blog post]]
+benchmarks.png
+
+* Wrapping up
+
+The next phase for this package is to test it extensively on some real world content,
+and ensure it meets the workspace requirements for Plone intranet.
+
+- Plone5 buildout and benchmarks
+* Questions?
+Thanks!
