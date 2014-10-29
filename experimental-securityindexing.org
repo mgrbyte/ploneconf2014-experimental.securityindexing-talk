@@ -5,26 +5,51 @@
 plone-intranet.png
 
 * A bit about me
-Python developer since '98/Python1.5.2
-Author of/Contributor to some open source stuff
- - pyramid
- - substanced
- - ploneintranet
+
+ - Python as main language for long time (~ '98/Python1.5.2)
+ - Author of/Contributor to a small amount open source stuff
+   - pyramid
+   - substanced
+   - ploneintranet
+
+   <3s Emacs.
 
 mattr-whiteboard.jpeg
 
-* TODO The problem
-** TODO What is the problem?
+* Background
+
+** What is the problem we're trying to solve?
+
   - @@sharing tab - performing operations here can be expensive
   - Complex heirachies compound the problem
   - Depending on number of objects, request can timeout (HTTP 503), or worse, crash the site.
 
-* TODO Approches
+** Plone users, groups and local roles
+
+  - Local roles can be assigned to any user, which can recorded at any arbitrary node in the content tree (ZODB)
+  - Local roles stored in __acl_local_roles__ on the node (context)
+  - Local roles are inherhited by default (unless checkbox selected in @@sharing tab, aka __ac_local_roles_block__)
+
+
+** Plone Intranet Project
+
+As part of the Plone intranet project, three Netsight'ers were assigned
+to work on the problem:
+
+   - Matt Hamilton, Ben Cole and Matt Russell
+
+Initial design phase (3 days, no code!):
+ - Whiteboard design
+ - Collobarative coding sessions
+
+
+* Approches & attempts
   :PROPERTIES:
   :ARCHIVE:  approaches
   :END:
 
- Various approaches were attempted:
+
+Various approaches were attempted:
 
   - Using PAS groups to represent groups of permissions
     Attempt to group common permissions sets using (PAS) user groups
@@ -32,16 +57,6 @@ mattr-whiteboard.jpeg
     - https://github.com/netsight/experimental.localrolesindex
     - Abandonded approach due to 'wrong level' of abstraction 
       (Index implementation would require knowledge of Plone content/portal objects)
-
-* TODO Plone Intranet Project
-As part of the Plone intranet project, three Netsight'ers were assigned
-to work on the problem:
-
-   - Matt Hamilton,Ben Cole and Matt Russell
-
-Initial design phase (3 days, no code!):
- - Whiteboard design
- - Collobarative coding sessions
 
 * Implementation
 
@@ -52,13 +67,33 @@ Initial design phase (3 days, no code!):
 
 ** Description
 
- - A `Shadow tree` is a node based structure which mirrors the content tree.
+ - Utility stores a BTree to shadow the main content tree
+   - Annotation on the portal object (removed on uninstall by profile)
+ - A "Shadow tree" is a node based structure which mirrors the content tree.
  - Stores a hash of all the objects' __ac_local_roles__
  - subscribers to DX/AT events:
    - ensure nodes are created/moved/deleted in the shadow tree for each operation on content
- - A step through what the algorithm does
+
+** Reindexing algorithm
+
+Given a content object to index:
+  0. Ensure "shadow tree" node exists with security information for the object
+     (Any intermediate nodes are created with just their path component)
+  1. Compute The hash/checksum of the local roles the object
+  2. Re-index just that object
+  3. Re-compute if the hash/checksum of the local roles
+  4. If tokens (old and new) do not match, exit.
+  5. Otherwise, for each child object of the current object's descendants (iterated by path)
+  6. Group child nodes by token
+   ../experimental.securityindexing/src/experimental/securityindexing/adapters.py:154
    
 * Benchmarks
+
+ - Operations that are performed
+  - Re-index at the root of the site, no change to local roles
+  - Re-index at the root of the site, perform workflow change (publish)
+  - Re-index at the root of the site, adding local role to a user first.
+  - Re-index at the root of the site, add local role, set a child to not inherit roles.
 
  - Can be run against:
    - Plone 4.x with Archetypes content
@@ -73,4 +108,5 @@ and ensure it meets the workspace requirements for Plone intranet.
 
 - Plone5 buildout and benchmarks
 * Questions?
+
 Thanks!
